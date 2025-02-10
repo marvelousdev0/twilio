@@ -1,6 +1,11 @@
 package com.vamshimaddur.spring.twilio.lookup;
 
 import com.twilio.rest.lookups.v2.PhoneNumber;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +25,38 @@ public class LookupController {
     this.lookupConfig = lookupConfig;
   }
 
+  /**
+   * This endpoint fetches reassigned number details for the given phone number and last
+   * verification date.
+   *
+   * @param phoneNumber The phone number for which reassigned number details should be fetched.
+   * @param lastVerifiedDate The date of the last verification of the phone number. If not provided,
+   *     the last verification date will be set to an empty string.
+   * @return A map containing the reassigned number details.
+   */
   @GetMapping("/reassignedNumber")
+  @Operation(
+      summary = "Fetch reassigned number details",
+      description =
+          "Fetches reassigned number details for a given phone number and last verification date.",
+      tags = {"Twilio Lookup"})
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successful response",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Map.class))),
+        @ApiResponse(responseCode = "400", description = "Bad Request"),
+        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+      })
   public Map<String, Object> fetchPhoneNumberDetails(
-      @RequestParam String phoneNumber, @RequestParam(required = false) String lastVerifiedDate) {
+          @RequestParam @Schema(description = "Phone number for lookup", example = "+1234567890") String phoneNumber,
+          @RequestParam(required = false)
+          @Schema(description = "Date of last verification", example = "yyyy-MM-dd") String lastVerifiedDate
+  ) {
     logger.info(
         "Received request to fetch phone number details for phoneNumber: {} with lastVerifiedDate:"
             + " {}",
