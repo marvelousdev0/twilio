@@ -17,6 +17,12 @@ public class LookupConfig {
   @Value("${twilio_auth_token}")
   private String authToken;
 
+  /**
+   * Initializes the Twilio client using the configured Account SID and Auth Token.
+   *
+   * <p>Validates the presence of Twilio credentials and throws an IllegalStateException if any
+   * credentials are missing or blank. Logs the initialization process.
+   */
   @PostConstruct
   public void init() {
     logger.info("Initializing Twilio with Account SID and Auth Token.");

@@ -26,13 +26,11 @@ public class LookupController {
   }
 
   /**
-   * This endpoint fetches reassigned number details for the given phone number and last
-   * verification date.
+   * Fetches reassigned number details for a given phone number and last verification date.
    *
-   * @param phoneNumber The phone number for which reassigned number details should be fetched.
-   * @param lastVerifiedDate The date of the last verification of the phone number. If not provided,
-   *     the last verification date will be set to an empty string.
-   * @return A map containing the reassigned number details.
+   * @param phoneNumber Phone number for lookup
+   * @param lastVerifiedDate Date of last verification (optional)
+   * @return A map containing the reassigned number details
    */
   @GetMapping("/reassignedNumber")
   @Operation(
@@ -53,10 +51,11 @@ public class LookupController {
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
       })
   public Map<String, Object> fetchPhoneNumberDetails(
-          @RequestParam @Schema(description = "Phone number for lookup", example = "+1234567890") String phoneNumber,
-          @RequestParam(required = false)
-          @Schema(description = "Date of last verification", example = "yyyy-MM-dd") String lastVerifiedDate
-  ) {
+      @RequestParam @Schema(description = "Phone number for lookup", example = "1234567890")
+          String phoneNumber,
+      @RequestParam(required = false)
+          @Schema(description = "Date of last verification", example = "yyyymmdd")
+          String lastVerifiedDate) {
     logger.info(
         "Received request to fetch phone number details for phoneNumber: {} with lastVerifiedDate:"
             + " {}",
@@ -67,6 +66,7 @@ public class LookupController {
       lookupConfig.init();
       PhoneNumber fetcher =
           PhoneNumber.fetcher(phoneNumber)
+              .setFields("reassigned_number")
               .setLastVerifiedDate(lastVerifiedDate != null ? lastVerifiedDate : "")
               .fetch();
       Map<String, Object> response = fetcher.getReassignedNumber();
@@ -74,7 +74,7 @@ public class LookupController {
       return response;
     } catch (Exception ex) {
       logger.error("Error occurred while fetching details for phoneNumber: {}", phoneNumber, ex);
-      throw ex; // Re-throwing the exception after logging
+      throw ex;
     }
   }
 }
