@@ -1,9 +1,6 @@
 package com.vamshimaddur.spring.twilio.lookup;
 
-import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/twilio/lookup")
@@ -15,8 +12,9 @@ public class LookupController {
     this.service = service;
   }
 
-  @GetMapping("/reassignedNumber")
-  public Map<String, Object> fetchData() {
-    return service.fetchReassignedNumberDetails();
+  @GetMapping("/reassignedNumber/{phoneNumber}")
+  public Object fetchReassignedNumberDetails(
+      @PathVariable String phoneNumber, @RequestParam String lastVerifiedDate) {
+    return service.fetchReassignedNumberDetails(phoneNumber, lastVerifiedDate);
   }
 }

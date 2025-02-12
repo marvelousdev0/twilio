@@ -10,24 +10,39 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class LookupService {
   private static final Logger logger = LoggerFactory.getLogger(LookupService.class);
-  private final WebClient webClient;
+  private final WebClient.Builder webClientBuilder;
+  private final LookupConfig lookupConfig;
 
-  public LookupService(LookupConfig lookupConfig) {
-    logger.info("Initializing Twilio Lookup Service.");
-    String basicAuth = lookupConfig.init();
-    this.webClient =
-        WebClient.builder()
-            .baseUrl(
-                "https://lookups.twilio.com/v2/PhoneNumbers/2345678904?Fields=reassigned_number&LastVerifiedDate=20240101")
-            .defaultHeader("Authorization", "Basic " + basicAuth)
-            .build();
+  public LookupService(WebClient.Builder webClientBuilder, LookupConfig lookupConfig) {
+    this.webClientBuilder = webClientBuilder;
+    this.lookupConfig = lookupConfig;
   }
 
-  public Map<String, Object> fetchReassignedNumberDetails() {
+  public Object fetchReassignedNumberDetails(String phoneNumber, String lastVerifiedDate) {
+    logger.info(
+        "Fetching reassigned number details for phone number: {} and lastVerifiedDate: {}",
+        phoneNumber,
+        lastVerifiedDate);
+    String basicAuth = lookupConfig.init();
+
+    WebClient webClient =
+        webClientBuilder
+            .baseUrl("https://lookups.twilio.com/v2")
+            .defaultHeader("Authorization", "Basic " + basicAuth)
+            .build();
+
     return webClient
         .get()
+        .uri(
+            uriBuilder ->
+                uriBuilder
+                    .path("/PhoneNumbers/{phoneNumber}") // Path parameter
+                    .queryParam("Fields", "reassigned_number") // Query parameter
+                    .queryParam("LastVerifiedDate", lastVerifiedDate) // Query parameter
+                    .build(phoneNumber)) // Replace {id} with resourceId
         .retrieve()
         .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+        .map(response -> response.get("reassigned_number"))
         .block();
   }
 }
