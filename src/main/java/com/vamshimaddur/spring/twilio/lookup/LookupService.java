@@ -10,12 +10,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class LookupService {
   private static final Logger logger = LoggerFactory.getLogger(LookupService.class);
-  private final WebClient.Builder webClientBuilder;
-  private final LookupConfig lookupConfig;
+  private final WebClient webClient;
 
   public LookupService(WebClient.Builder webClientBuilder, LookupConfig lookupConfig) {
-    this.webClientBuilder = webClientBuilder;
-    this.lookupConfig = lookupConfig;
+    String basicAuth = lookupConfig.init();
+
+    this.webClient =
+        webClientBuilder
+            .baseUrl("https://lookups.twilio.com/v2")
+            .defaultHeader("Authorization", "Basic " + basicAuth)
+            .build();
   }
 
   public Object fetchReassignedNumberDetails(String phoneNumber, String lastVerifiedDate) {
@@ -23,13 +27,6 @@ public class LookupService {
         "Fetching reassigned number details for phone number: {} and lastVerifiedDate: {}",
         phoneNumber,
         lastVerifiedDate);
-    String basicAuth = lookupConfig.init();
-
-    WebClient webClient =
-        webClientBuilder
-            .baseUrl("https://lookups.twilio.com/v2")
-            .defaultHeader("Authorization", "Basic " + basicAuth)
-            .build();
 
     return webClient
         .get()
