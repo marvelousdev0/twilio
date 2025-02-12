@@ -28,18 +28,23 @@ public class LookupService {
         phoneNumber,
         lastVerifiedDate);
 
-    return webClient
-        .get()
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path("/PhoneNumbers/{phoneNumber}") // Path parameter
-                    .queryParam("Fields", "reassigned_number") // Query parameter
-                    .queryParam("LastVerifiedDate", lastVerifiedDate) // Query parameter
-                    .build(phoneNumber)) // Replace {id} with resourceId
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-        .map(response -> response.get("reassigned_number"))
-        .block();
+    try {
+      return webClient
+          .get()
+          .uri(
+              uriBuilder ->
+                  uriBuilder
+                      .path("/PhoneNumbers/{phoneNumber}") // Path parameter
+                      .queryParam("Fields", "reassigned_number") // Query parameter
+                      .queryParam("LastVerifiedDate", lastVerifiedDate) // Query parameter
+                      .build(phoneNumber)) // Replace {id} with resourceId
+          .retrieve()
+          .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+          .map(response -> response.get("reassigned_number"))
+          .block();
+    } catch (Exception e) {
+      logger.error("Error fetching reassigned number details", e);
+      throw new RuntimeException("Error fetching reassigned number details", e);
+    }
   }
 }
