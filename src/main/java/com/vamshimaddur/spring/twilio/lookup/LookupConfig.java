@@ -1,7 +1,7 @@
 package com.vamshimaddur.spring.twilio.lookup;
 
-import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
+import java.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class LookupConfig {
    * credentials are missing or blank. Logs the initialization process.
    */
   @PostConstruct
-  public void init() {
+  public String init() {
     logger.info("Initializing Twilio with Account SID and Auth Token.");
 
     // Validate Twilio credentials
@@ -37,8 +37,7 @@ public class LookupConfig {
       throw new IllegalStateException("Twilio Auth Token is not configured.");
     }
 
-    // Initialize Twilio
-    Twilio.init(accountSid, authToken);
     logger.info("Twilio initialized successfully.");
+    return Base64.getEncoder().encodeToString((accountSid + ":" + authToken).getBytes());
   }
 }
