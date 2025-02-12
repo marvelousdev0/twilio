@@ -15,6 +15,12 @@ public class LookupController {
   @GetMapping("/reassignedNumber/{phoneNumber}")
   public Object fetchReassignedNumberDetails(
       @PathVariable String phoneNumber, @RequestParam String lastVerifiedDate) {
+    if (phoneNumber == null || phoneNumber.isEmpty()) {
+      throw new LookupParameterException("Phone number is required");
+    }
+    if (lastVerifiedDate == null || lastVerifiedDate.isEmpty()) {
+      throw new LookupParameterException("Last verified date is required");
+    }
     return service.fetchReassignedNumberDetails(phoneNumber, lastVerifiedDate);
   }
 }
