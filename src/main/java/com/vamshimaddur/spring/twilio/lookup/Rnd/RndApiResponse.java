@@ -5,10 +5,10 @@ import jakarta.annotation.Nullable;
 public class RndApiResponse {
   private final RndApiError error;
   private final String phoneNumber;
-  private final String isNumberReassigned;
+  private final Boolean isNumberReassigned;
 
   public RndApiResponse(
-      String phoneNumber, @Nullable String isNumberReassigned, @Nullable RndApiError error) {
+      String phoneNumber, @Nullable Boolean isNumberReassigned, @Nullable RndApiError error) {
     this.phoneNumber = phoneNumber;
     this.isNumberReassigned = isNumberReassigned;
     this.error = error;
@@ -18,7 +18,7 @@ public class RndApiResponse {
     return phoneNumber;
   }
 
-  public String getIsNumberReassigned() {
+  public Boolean getIsNumberReassigned() {
     return isNumberReassigned;
   }
 

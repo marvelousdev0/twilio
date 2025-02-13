@@ -108,7 +108,9 @@ public class RndService {
       return new RndApiResponse(phoneNumber, null, new RndApiError(500, "Unknown error occurred"));
     }
 
-    String isNumberReassigned = (String) response.get("is_number_reassigned");
+    String isNumberReassignedString = (String) response.get("is_number_reassigned");
+    Boolean isNumberReassigned = "yes".equalsIgnoreCase(isNumberReassignedString);
+
     Integer errorCode =
         response.get("error_code") == null ? null : (Integer) response.get("error_code");
 
