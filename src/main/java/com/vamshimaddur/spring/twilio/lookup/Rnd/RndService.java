@@ -109,7 +109,15 @@ public class RndService {
     }
 
     String isNumberReassignedString = (String) response.get("is_number_reassigned");
-    Boolean isNumberReassigned = "yes".equalsIgnoreCase(isNumberReassignedString);
+    String isNumberReassignedString = (String) response.get("is_number_reassigned");
+    Boolean isNumberReassigned = null;
+    if (isNumberReassignedString != null) {
+      if ("yes".equalsIgnoreCase(isNumberReassignedString)) {
+        isNumberReassigned = true;
+      } else if ("no".equalsIgnoreCase(isNumberReassignedString)) {
+        isNumberReassigned = false;
+      }
+    }
 
     Integer errorCode =
         response.get("error_code") == null ? null : (Integer) response.get("error_code");
